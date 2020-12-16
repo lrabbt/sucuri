@@ -173,7 +173,7 @@ class Scheduler:
             def mpi_output(outqueue):
                 while self.keep_working:
                     task = outqueue.get()
-                    if task != None:  # task == None means termination
+                    if task is not None:  # task is None means termination
                         # print "MPI Sending task to slave node."
                         dest = task.workerid / self.n_workers  # destination mpi process
                         comm.send(task, dest=dest, tag=Scheduler.TASK_TAG)
@@ -215,7 +215,7 @@ class Scheduler:
             def mpi_output(outqueue):
                 while self.keep_working:
                     msg = outqueue.get()
-                    if msg != None:
+                    if msg is not None:
                         # print "MPI send opermsg to master."
                         comm.send(msg, dest=0, tag=0)
 
@@ -232,13 +232,13 @@ class Scheduler:
 
         dst.inport[oper.dstport] += [oper]
         args = dst.match()
-        if args != None:
+        if args is not None:
             self.issue(dst, args)
 
     def check_affinity(self, task):
 
         node = self.graph.nodes[task.nodeid]
-        if node.affinity == None:
+        if node.affinity is None:
             return None
 
         affinity = node.affinity[0]
@@ -284,7 +284,7 @@ class Scheduler:
             print("Starting %s" % worker.wid)
             worker.start()
 
-        if self.mpi_rank == 0 or self.mpi_rank == None:
+        if self.mpi_rank == 0 or self.mpi_rank is None:
             # it this is the leader process or if mpi is not being used
             print("Main loop")
             self.main_loop()
@@ -296,7 +296,7 @@ class Scheduler:
         while len(tasks) > 0 or not self.all_idle(self.workers) or operq.qsize() > 0:
             opersmsg = operq.get()
             for oper in opersmsg:
-                if oper.val != None:
+                if oper.val is not None:
                     self.propagate_op(oper)
 
             wid = opersmsg[0].wid
@@ -311,7 +311,7 @@ class Scheduler:
             while len(tasks) > 0 and len(self.waiting) > 0:
                 task = tasks.pop(0)
                 wid = self.check_affinity(task)
-                if wid != None:
+                if wid is not None:
                     if wid in self.waiting:
                         self.waiting.remove(wid)
                     else:

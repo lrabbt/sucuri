@@ -14,17 +14,17 @@ class TaggedValue:
     def __repr__(self):
         return "TaggedValue: (%d, %s)" % (self.tag, self.value)
 
-    def __cmp__(self, obj):
-        if obj == None:
-            return 1
-        if not isinstance(obj, TaggedValue):
-            raise TypeError("can only compare TaggedValue with TaggedValue.")
-        if self.tag > obj.tag:
-            return 1
-        elif self.tag < obj.tag:
-            return -1
-        else:
-            return 0
+    def __eq__(self, other):
+        if other is not None and not isinstance(other, TaggedValue):
+            raise TypeError("Can only compare TaggedValue with TaggedValue.")
+        return other is not None and self.tag == other.tag
+
+    def __lt__(self, other):
+        if other is None:
+            return False
+        if not isinstance(other, TaggedValue):
+            raise TypeError("Can only compare TaggedValue with TaggedValue.")
+        return self.tag < other.tag
 
 
 class Source(Node):
@@ -74,7 +74,7 @@ class FilterTagged(Node):
     """Produce operands in the form of TaggedValue, with the same tag as the input"""
 
     def run(self, args, workerid, operq):
-        if args[0] == None:
+        if args[0] is None:
             opers = [Oper(workerid, None, None, None)]
             self.sendops(opers, operq)
             return 0
@@ -108,7 +108,7 @@ class Serializer(Node):
         self.affinity = [0]
 
     def run(self, args, workerid, operq):
-        if args[0] == None:
+        if args[0] is None:
             opers = [Oper(workerid, None, None, None)]
             self.sendops(opers, operq)
             return 0
