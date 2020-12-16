@@ -1,7 +1,7 @@
 import sys, os
 import time
 
-from pyDF import *
+from sucuri import *
 
 
 f = lambda x: 1 / (1 + x ** 2)
